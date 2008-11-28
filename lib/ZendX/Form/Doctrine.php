@@ -266,7 +266,7 @@ class ZendX_Form_Doctrine extends Zend_Form
         $valid = parent::isValid($data);
 
         $model = $this->getModel();
-        $model->fromArray($data);
+        $model->fromArray($this->getValues());
 
         if (!$model->isValid()) {
             $valid = false;
@@ -288,6 +288,6 @@ class ZendX_Form_Doctrine extends Zend_Form
     public function populate($values)
     {
         parent::populate($values);
-        $this->getModel()->fromArray($values);
+        $this->getModel()->fromArray($this->getValues());
     }
 }
