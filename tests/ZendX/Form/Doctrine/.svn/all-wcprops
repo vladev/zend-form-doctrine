@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/mailq/!svn/ver/64/trunk/tests/MailQ/Form/Doctrine
+END
+MappingsTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/mailq/!svn/ver/57/trunk/tests/MailQ/Form/Doctrine/MappingsTest.php
+END
+ValuesTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/mailq/!svn/ver/59/trunk/tests/MailQ/Form/Doctrine/ValuesTest.php
+END
+RelationsTest.php
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/mailq/!svn/ver/58/trunk/tests/MailQ/Form/Doctrine/RelationsTest.php
+END
+stubs.php
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/mailq/!svn/ver/64/trunk/tests/MailQ/Form/Doctrine/stubs.php
+END

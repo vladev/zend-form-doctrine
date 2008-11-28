@@ -1,0 +1,131 @@
+<?php
+include_once 'stubs.php';
+
+class MailQ_Form_Doctrine_RelationsTest extends MailQ_ModelTestCase  
+{
+    protected $authors = array();
+    protected $books = array();
+
+	protected $cars = array();
+	protected $drivers = array();
+    
+    
+    public function setUp()
+    {
+        parent::setUp();
+    }
+
+	public function setUpBooksAndAuthors()
+	{
+		Doctrine::createTablesFromArray(array ('Article', 'Author'));
+
+		$bruceEckel = new Author();
+        $bruceEckel->firstName = 'Bruce';
+        $bruceEckel->lastName = 'Eckel';
+        $bruceEckel->save();
+
+		$this->authors['bruceEckel'] = $bruceEckel;
+        
+        $kentBeck = new Author();
+        $kentBeck->firstName = 'Kent';
+        $kentBeck->lastName = 'Beck';
+        $kentBeck->save();
+
+		$this->authors['kentBeck'] = $kentBeck;
+
+		$thinkingInJava = new Book();
+        $thinkingInJava->title = 'Thinking in Java';
+        $thinkingInJava->save();
+        
+        $this->books['thinkingInJava'] = $thinkingInJava;
+
+		$implementationPatterns = new Book();
+        $implementationPatterns->title = 'Implementation Patterns';
+        $implementationPatterns->save();
+
+		$this->books['implementationPatterns'] = $implementationPatterns;
+	}
+
+	public function setUpCarsAndDrivers()
+	{
+		Doctrine::createTablesFromArray(array ('Car', 'Driver'));
+
+		$bmw = new Car();
+        $bmw->make = 'BMW';
+        $bmw->save();
+
+		$this->cars['bmw'] = $bmw;
+        
+        $audi = new Car();
+        $audi->make = 'Audi';
+        $audi->save();
+
+		$this->cars['audi'] = $audi;
+        
+        $kiro = new Driver();
+        $kiro->name = 'Kiril Zyapkov';
+        $kiro->save();
+
+		$this->drivers['kiro'] = $kiro;
+
+        $emo = new Driver();
+        $emo->name = 'Emil Ivanov';
+        $emo->save();
+
+		$this->drivers['emo'] = $emo;
+	}
+    
+    public function testFormForModelWithManyToOneRelationHasASelectForTheRelation()
+    {
+		$this->setUpBooksAndAuthors();
+
+        $bookForm = new MailQ_Form_Doctrine(new Book());
+        $this->assertType('Zend_Form_Element_Select', $bookForm->getElement('Author'));
+    }
+    
+    public function testFormShouldNotRenderFieldsForMappingColumns()
+    {
+		$this->setUpBooksAndAuthors();
+
+        $bookForm = new MailQ_Form_Doctrine(new Book());
+        $this->assertEquals(2, count($bookForm->getElements()));
+    }
+    
+    public function testExceptionIsThrownWhenARelationColumnIsNotMappedToMultiSelectionFormElement()
+    {
+		$this->setUpBooksAndAuthors();
+
+        $this->setExpectedException('MailQ_Form_Doctrine_Exception', null, 1001);
+        new WrongForm(new Book());
+    }
+    
+    public function testFormForModelWithOneToManyRelationsHasAMultiselectForTheRelation()
+    {
+		$this->setUpBooksAndAuthors();
+
+        $authorForm = new MailQ_Form_Doctrine(new Author());
+		$booksElement = $authorForm->getElement('Books');
+
+		$this->assertType('Zend_Form_Element_Multiselect', $authorForm->getElement('Books'));
+		/* @var $booksElement Zend_Form_Element_Multiselect */
+		$this->assertEquals(count($this->books), count($booksElement->getMultiOptions()));
+    }
+    
+    public function testFormForModelWithManyToManyRelation()
+    {
+        $this->setUpCarsAndDrivers();
+        
+        $form = new MailQ_Form_Doctrine($this->drivers['emo']);
+        $this->assertType('Zend_Form_Element_Multiselect', $form->getElement('CarsToDrive'));
+    }
+
+	public function testFormForModelWithoutAnySavedRelationsShouldYeildANonSelectedMultiselect()
+	{
+		$this->setUpCarsAndDrivers();
+
+		$form = new MailQ_Form_Doctrine($this->drivers['emo']);
+		$carsToDriveElement = $form->getElement('CarsToDrive');
+		/* @var $carsToDriveElement Zend_Form_Element_Multiselect */
+		$this->assertNull($carsToDriveElement->getValue());
+	}
+}
